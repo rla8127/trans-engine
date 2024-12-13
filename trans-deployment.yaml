@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trans-engine-deployment
+  namespace: default
+spec:
+  replicas: 3 
+  selector:
+    matchLabels:
+      app: trans-engine
+  template:
+    metadata:
+      labels:
+        app: trans-engine
+    spec:
+      containers:
+        - name: trans-engine-container
+          image: 466015366405.dkr.ecr.eu-north-1.amazonaws.com/trans-engine:1.2
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: trans-engine-config
+            - secretRef:
+                name: trans-engine-secret

@@ -1,14 +1,16 @@
 from transEngine import translate
 from threading import Lock
 from redis_set import set_result
+import os
 import json
 import pika
 ##########################################
 # 변수선언
 ##########################################
-HOST_NAME = "172.16.10.237"
-USERNAME = "fastapi_user"
-PASSWORD = "fastapi_user"
+RABBIT_HOST = os.getenv("RABBIT_HOST")
+RABBIT_PORT = os.getenv("RABBIT_PORT")
+RABBIT_USERNAME = os.getenv("RABBIT_USERNAME")
+RABBIT_PASSWORD = os.getenv("RABBIT_PASSWORD")
 
 ##########################################
 # CallBack 함수
@@ -63,7 +65,7 @@ class RabbitMQSingleton:
 ##########################################
 # RabbitMQ 인스턴스 생성
 ##########################################    
-rabbitmq_instance = RabbitMQSingleton(host=HOST_NAME, username=USERNAME, password=PASSWORD)
+rabbitmq_instance = RabbitMQSingleton(host=RABBIT_HOST, username=RABBIT_USERNAME, password=RABBIT_PASSWORD)
 rabbitmq_instance.channel.basic_consume(queue="trans_queue", on_message_callback=callback, auto_ack=False)  
 
 ##########################################
@@ -86,8 +88,8 @@ def consume_message():
                    
             # 연결 비정상일 시, 인스턴스 재생성 및 커넥션 / 채널 생성
             else:
-                rabbitmq_instance = RabbitMQSingleton(host=HOST_NAME, username=USERNAME, password=PASSWORD)
-                rabbitmq_instance._connect(host=HOST_NAME, username=USERNAME, password=PASSWORD)
+                rabbitmq_instance = RabbitMQSingleton(host=RABBIT_HOST, username=RABBIT_USERNAME, password=RABBIT_PASSWORD)
+                rabbitmq_instance._connect(host=RABBIT_HOST, username=RABBIT_USERNAME, password=RABBIT_PASSWORD)
                 print(f"rabbitmq connection is reconnected !!!")
                 
         except Exception as e:
